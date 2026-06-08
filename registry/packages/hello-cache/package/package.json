@@ -1,0 +1,10 @@
+{
+  "name": "hello-cache",
+  "version": "1.0.0",
+  "description": "Small package for NGINX npm tarball cache experiments.",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "license": "UNLICENSED"
+}

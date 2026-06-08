@@ -1,0 +1,10 @@
+{
+  "name": "npm-nginx-cache-client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Client project for testing npm installs through NGINX.",
+  "dependencies": {
+    "@myscope/hello-cache": "1.0.0",
+    "hello-cache": "1.0.0"
+  }
+}

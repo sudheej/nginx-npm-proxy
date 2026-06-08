@@ -1,0 +1,10 @@
+{
+  "name": "@myscope/hello-cache",
+  "version": "1.0.0",
+  "description": "Scoped package for NGINX npm tarball cache experiments.",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "fake-npm-registry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tiny npm registry used to test NGINX tarball caching.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
