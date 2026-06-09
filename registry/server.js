@@ -7,6 +7,7 @@ const express = require("express");
 const app = express();
 const port = Number(process.env.PORT || 4873);
 const tarballBaseUrl = (process.env.TARBALL_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
+const authToken = process.env.AUTH_TOKEN || "";
 
 const packageName = "hello-cache";
 const scopedPackageName = "@myscope/hello-cache";
@@ -18,7 +19,21 @@ const tarballs = {
 };
 
 app.use((req, res, next) => {
-  console.log(`[registry] ${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
+  const authorization = req.get("authorization") || "";
+  const authState = authorization ? "present" : "absent";
+  console.log(
+    `[registry] ${new Date().toISOString()} ${req.method} ${req.originalUrl} auth=${authState}`
+  );
+
+  if (authToken && authorization !== `Bearer ${authToken}`) {
+    res.setHeader("WWW-Authenticate", 'Bearer realm="npm-cache-lab"');
+    res.status(401).json({
+      error: "unauthorized",
+      message: authorization ? "Invalid bearer token." : "Bearer token required."
+    });
+    return;
+  }
+
   next();
 });
 
@@ -114,4 +129,5 @@ app.use((req, res) => {
 app.listen(port, "0.0.0.0", () => {
   console.log(`[registry] listening on http://0.0.0.0:${port}`);
   console.log(`[registry] metadata tarball base URL: ${tarballBaseUrl}`);
+  console.log(`[registry] bearer authentication: ${authToken ? "required" : "disabled"}`);
 });

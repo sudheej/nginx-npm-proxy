@@ -24,6 +24,7 @@ local package tarballs
 The client lives in `client/`.
 
 - `client/.npmrc` sets `registry=http://localhost:8080/`.
+- `client/.npmrc.auth` additionally reads an auth token from `${NPM_TOKEN}`.
 - `client/package.json` depends on `hello-cache@1.0.0` and `@myscope/hello-cache@1.0.0`.
 - `scripts/test-install.sh` deletes install artifacts, clears the lab-local npm cache, and runs installs twice.
 
@@ -272,7 +273,20 @@ proxy_no_cache $http_authorization;
 proxy_cache_bypass $http_authorization;
 ```
 
-This is important for enterprise registries because authenticated responses may be permission-dependent. This lab does not implement authentication, but the proxy config keeps that safety rule visible.
+This is important for enterprise registries because authenticated responses may be permission-dependent. The fake registry can require a bearer token when `REGISTRY_AUTH_TOKEN` is set in the Compose environment, and `scripts/test-auth.sh` verifies npm token forwarding end to end.
+
+NGINX also makes token forwarding explicit:
+
+```nginx
+proxy_set_header Authorization $http_authorization;
+```
+
+The bypass has an important operational consequence: npm commonly sends its
+token for both metadata and tarball requests, so authenticated clients do not
+benefit from this shared tarball cache. Removing the bypass requires a
+repository-specific security decision, such as proving that every authorized
+caller receives identical immutable bytes or partitioning cache keys by an
+appropriate permission identity.
 
 ## Artifactory Replacement Point
 
@@ -308,6 +322,8 @@ The same proof applies: inspect metadata, inspect lockfiles, then watch whether 
 | Wrong mode | `localhost:8080` | `localhost:4873` | bypassed | tarball on every npm fetch |
 | Stale wrong lockfile | maybe `localhost:8080` | lockfile has `localhost:4873` | bypassed | tarball on every npm fetch |
 | Metadata request | `localhost:8080` | not applicable | `BYPASS` | metadata request always visible |
+| Valid bearer token | `localhost:8080` | `localhost:8080` | tarballs `BYPASS` | every authenticated request visible |
+| Missing or invalid token | `localhost:8080` | not applicable | no stored response | upstream returns `401` |
 
 ## Operational Commands
 
@@ -345,4 +361,22 @@ Inspect NGINX status:
 ```bash
 curl -I http://localhost:8080/hello-cache/-/hello-cache-1.0.0.tgz
 curl -I http://localhost:8080/hello-cache/-/hello-cache-1.0.0.tgz
+```
+
+Authenticated mode:
+
+```bash
+docker compose down -v
+REGISTRY_AUTH_TOKEN=lab-secret-token docker compose up --build
+./scripts/test-auth.sh
+```
+
+Alternate NGINX host port:
+
+```bash
+NGINX_PORT=18080 \
+TARBALL_BASE_URL=http://localhost:18080 \
+REGISTRY_AUTH_TOKEN=lab-secret-token \
+docker compose up --build
+NGINX_BASE_URL=http://localhost:18080 ./scripts/test-auth.sh
 ```

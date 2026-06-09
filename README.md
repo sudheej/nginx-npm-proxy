@@ -65,6 +65,49 @@ cd npm-nginx-cache-lab
 ./scripts/test-install.sh
 ```
 
+## Test an Authenticated Upstream
+
+Start the lab with bearer authentication enabled:
+
+```bash
+REGISTRY_AUTH_TOKEN=lab-secret-token docker compose up --build
+```
+
+Then run the authenticated install test in another terminal:
+
+```bash
+./scripts/test-auth.sh
+```
+
+Host ports are configurable when the defaults are occupied:
+
+```bash
+NGINX_PORT=18080 \
+TARBALL_BASE_URL=http://localhost:18080 \
+REGISTRY_AUTH_TOKEN=lab-secret-token \
+docker compose up --build
+
+NGINX_BASE_URL=http://localhost:18080 ./scripts/test-auth.sh
+```
+
+The checked-in `client/.npmrc.auth` uses npm's `${NPM_TOKEN}` environment
+substitution, so no real token is stored in the repository. The script verifies
+that missing and invalid tokens receive `401`, a valid token reaches the
+upstream, and two complete npm installs succeed through NGINX.
+
+NGINX forwards `Authorization` explicitly. Authenticated tarball requests still
+bypass the shared cache by design:
+
+```nginx
+proxy_set_header Authorization $http_authorization;
+proxy_no_cache $http_authorization;
+proxy_cache_bypass $http_authorization;
+```
+
+This conservative policy avoids serving one user's private package response to
+another user. It also means a token-bearing production npm client will not get
+tarball cache hits with this configuration.
+
 ## Verify Cache HIT and MISS
 
 Use curl against the NGINX URL:
@@ -178,7 +221,7 @@ location ~ \.tgz$ {
 }
 ```
 
-Authorization requests are not cached:
+Authorization requests are forwarded upstream but not cached:
 
 ```nginx
 proxy_no_cache $http_authorization;
@@ -224,7 +267,6 @@ The key test is the same: inspect package metadata and lockfiles. Tarball URLs m
 
 ## What This Lab Does Not Cover
 
-- authentication
 - private package permissions
 - npm audit endpoints
 - publish

@@ -6,9 +6,12 @@ services:
       # Correct mode: metadata points npm tarballs back through NGINX.
       # Wrong-mode experiment: change this to http://localhost:4873
       TARBALL_BASE_URL: ${TARBALL_BASE_URL:-http://localhost:8080}
+      # Empty disables auth. Set REGISTRY_AUTH_TOKEN to emulate an upstream
+      # Artifactory repository that requires an npm bearer token.
+      AUTH_TOKEN: ${REGISTRY_AUTH_TOKEN:-}
       PORT: 4873
     ports:
-      - "4873:4873"
+      - "${REGISTRY_PORT:-4873}:4873"
     volumes:
       - ./registry/packages:/app/packages
 
@@ -17,7 +20,7 @@ services:
     depends_on:
       - registry
     ports:
-      - "8080:8080"
+      - "${NGINX_PORT:-8080}:8080"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx-cache:/var/cache/nginx
