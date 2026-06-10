@@ -1,0 +1,20 @@
+
+> cache-lab-angular-build@1.0.0 build
+> ng build --configuration production
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-WH4MS7UD.js    | main          | 185.02 kB |                50.34 kB
+
+                    | Initial total | 185.02 kB |                50.34 kB
+
+Application bundle generation complete. [3.448 seconds]
+
+Output location: /tmp/npm-cache-acceptance-evidence/angular/dist/cache-lab-angular-build
+
+
+> cache-lab-angular-build@1.0.0 verify
+> node scripts/verify-build.js
+
+[verify] Angular production output: 2 files, 185370 bytes

@@ -1,0 +1,3 @@
+scenario,mode,run_id,npm_ci_ms,build_ms,nginx_tgz_hit,nginx_tgz_miss,nginx_tgz_bypass,upstream_tgz_requests,upstream_tgz_bytes,metadata_requests,exit_code,notes
+native,proxy-cold,1,79589,297,,,,,,,0,"registry=http://localhost:18080; npm_log_tgz_responses=108"
+native,proxy-warm,2,5366,304,,,,,,,0,"registry=http://localhost:18080; npm_log_tgz_responses=108"

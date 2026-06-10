@@ -1,0 +1,21 @@
+{
+  "name": "cache-lab-native-postinstall",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Exercises npm postinstall, node-gyp source compilation, and npm-hosted prebuilt native binaries.",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "postinstall": "node scripts/postinstall.js",
+    "verify": "node scripts/verify.js"
+  },
+  "dependencies": {
+    "node-addon-api": "8.5.0",
+    "sharp": "0.34.3"
+  },
+  "devDependencies": {
+    "node-gyp": "11.4.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -7,6 +7,7 @@ This lab demonstrates npm tarball caching through NGINX without requiring Artifa
 - npm configured to use NGINX as its registry
 - NGINX caching only `.tgz` tarballs
 - uncached metadata so package metadata behavior stays visible
+- a public npm fallback for realistic Angular/native dependency graphs
 
 For the design-level explanation, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -64,6 +65,59 @@ In another terminal, run the npm install experiment:
 cd npm-nginx-cache-lab
 ./scripts/test-install.sh
 ```
+
+## Run the CI and Workload Scenarios
+
+The extended scenarios cover committed lockfiles, legacy peer resolution,
+native lifecycle scripts, precompiled native packages, and an Angular
+production build:
+
+```bash
+./scripts/test-ci-scenarios.sh
+./scripts/test-workload-scenarios.sh native
+./scripts/test-workload-scenarios.sh angular
+```
+
+When port `8080` is occupied, start Compose and run the scenarios on an
+alternate port:
+
+```bash
+NGINX_PORT=18080 \
+REGISTRY_PORT=14873 \
+TARBALL_BASE_URL=http://localhost:18080 \
+docker compose up -d --build
+
+NPM_PROXY_URL=http://localhost:18080 ./scripts/test-ci-scenarios.sh
+NPM_REGISTRY_URL=http://localhost:18080 ./scripts/test-workload-scenarios.sh all
+```
+
+Use a supported LTS Node release for Angular. The validated baseline is Node
+`22.16.0`; Node `25.8.0` installed the dependencies but failed inside the
+Angular build worker.
+
+The native scenario deliberately separates three behaviors:
+
+- npm-hosted `sharp` platform tarballs are cacheable;
+- the root `node-gyp` addon compiles on every clean install;
+- Node headers fetched from `nodejs.org` are outside this NGINX cache.
+
+`node-sass` is not used because it is end-of-life and incompatible with the
+current Node baseline.
+
+See [REPORT.md](REPORT.md) for measured results, formulas, and scaling
+projections.
+
+## Public Registry Passthrough
+
+The fake registry still serves the local `hello-cache` fixtures directly.
+Unknown GET/HEAD requests fall back to `PUBLIC_REGISTRY_URL`, which defaults to
+`https://registry.npmjs.org`. JSON metadata responses have their
+`dist.tarball` URLs rewritten to `TARBALL_BASE_URL`, causing real package
+tarballs to return through NGINX.
+
+This makes the lab suitable for broad public lockfiles without turning metadata
+caching on. The registry logs upstream response byte counts as
+`[registry-upstream] ... bytes=N`.
 
 ## Test an Authenticated Upstream
 

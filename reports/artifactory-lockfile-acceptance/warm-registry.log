@@ -1,0 +1,2 @@
+registry-1  | [registry] 2026-06-10T01:48:29.353Z GET /npm auth=absent
+registry-1  | [registry-upstream] GET /npm status=200 bytes=2402079

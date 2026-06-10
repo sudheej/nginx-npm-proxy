@@ -1,0 +1,13 @@
+source_head=5043e1b0358caf3c9f6ab4da7196a971834fddde
+source_status_begin
+ M README.md
+ M docker-compose.yml
+ M registry/server.js
+?? ARTIFACTORY_LOCKFILE_ACCEPTANCE_REPORT.md
+?? REPORT.md
+?? reports/
+?? scenarios/
+?? scripts/summarize-results.sh
+?? scripts/test-ci-scenarios.sh
+?? scripts/test-workload-scenarios.sh
+source_status_end

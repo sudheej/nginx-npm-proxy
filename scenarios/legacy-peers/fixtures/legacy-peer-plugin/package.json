@@ -1,0 +1,9 @@
+{
+  "name": "legacy-peer-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "peerDependencies": {
+    "peer-host": "^1.0.0"
+  }
+}

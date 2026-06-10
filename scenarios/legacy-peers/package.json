@@ -1,0 +1,11 @@
+{
+  "name": "legacy-peers-cache-scenario",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proves npm ci --legacy-peer-deps with a genuine peer conflict.",
+  "dependencies": {
+    "hello-cache": "1.0.0",
+    "legacy-peer-plugin": "file:fixtures/legacy-peer-plugin",
+    "peer-host": "file:fixtures/peer-host"
+  }
+}

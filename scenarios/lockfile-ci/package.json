@@ -1,0 +1,10 @@
+{
+  "name": "lockfile-ci-cache-scenario",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proves repeat npm ci installs use the cache lab with a committed lockfile.",
+  "dependencies": {
+    "@myscope/hello-cache": "1.0.0",
+    "hello-cache": "1.0.0"
+  }
+}

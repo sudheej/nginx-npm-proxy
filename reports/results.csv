@@ -1,0 +1,4 @@
+scenario,mode,run_id,npm_ci_ms,build_ms,nginx_tgz_hit,nginx_tgz_miss,nginx_tgz_bypass,upstream_tgz_requests,upstream_tgz_bytes,metadata_requests,exit_code,notes
+angular,proxy-cold,1,8272,5042,0,427,0,427,56188909,0,0,"Node 22.16.0 npm 10.9.2; metadata count not captured"
+angular,proxy-warm,2,7193,5001,515,0,0,0,0,0,0,"Node 22.16.0 npm 10.9.2; metadata count not captured"
+native,proxy-warm,2,5366,304,0,0,0,0,0,0,0,"Functional pass; cold timing excluded after proxy startup race"
